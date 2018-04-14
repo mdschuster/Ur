@@ -44,6 +44,9 @@ public class DiceRoller : MonoBehaviour {
 			}
 		}
 
+		//update total
+		this.transform.GetChild(4).GetComponent<Text>().text=diceTotal.ToString();
+
 
 		Debug.Log ("Rolled: " + diceValues[0]+" "+ diceValues[1]+" "+ diceValues[2]+" "+ diceValues[3]+" " + " (" + diceTotal + ") ");
 	}
