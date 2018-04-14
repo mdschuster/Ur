@@ -9,6 +9,7 @@ public class DiceRoller : MonoBehaviour {
 	public int diceTotal;
 	public Sprite[] DiceImageOne;
 	public Sprite[] DiceImageZero;
+	public bool isDoneRolling = false;
 
 	// Use this for initialization
 	void Start () {
@@ -18,6 +19,13 @@ public class DiceRoller : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	public void newTurn(){
+		//This is the start of a player's turn
+		//we don't have a roll for them yet
+		isDoneRolling = false;
+		this.transform.GetChild (4).GetComponent<Text> ().text = "?";
 	}
 
 	public void RollTheDice(){
@@ -47,7 +55,7 @@ public class DiceRoller : MonoBehaviour {
 		//update total
 		this.transform.GetChild(4).GetComponent<Text>().text=diceTotal.ToString();
 
-
-		Debug.Log ("Rolled: " + diceValues[0]+" "+ diceValues[1]+" "+ diceValues[2]+" "+ diceValues[3]+" " + " (" + diceTotal + ") ");
+		//sets doneRolling to true after all the rolling is done
+		isDoneRolling = true;
 	}
 }
