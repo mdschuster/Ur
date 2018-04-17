@@ -13,6 +13,9 @@ public class StateManager : MonoBehaviour {
     public bool isDoneClicking = false;
     public bool isDoneAnimating = false;
     DiceRoller theDiceRoller;
+    PlayerStone[] p1Stones;
+    PlayerStone[] p2Stones;
+    Text turnText;
 
     public enum turnPhase { WAITING_FOR_ROLL, WAITING_FOR_CLICK, WAITING_FOR_ANIMATION, WAITING_FOR_NEWTURN };
     public turnPhase currentPhase;
@@ -20,13 +23,16 @@ public class StateManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         theDiceRoller = GameObject.FindObjectOfType<DiceRoller>();
+        turnText = GameObject.Find("PlayerText").GetComponent<Text>();
+        p1Stones = GameObject.Find("Player1-StoneStorage").GetComponentsInChildren<PlayerStone>();
+        p2Stones = GameObject.Find("Player2-StoneStorage").GetComponentsInChildren<PlayerStone>();
     }
 	
 	// Update is called once per frame
 	void Update () {
 		//is the turn done?
         if(currentPhase==turnPhase.WAITING_FOR_NEWTURN) {
-            Debug.Log("Turn is Done");
+            //Debug.Log("Turn is Done");
             newTurn();
         }
 	}
@@ -39,10 +45,26 @@ public class StateManager : MonoBehaviour {
         currentPlayerId = (currentPlayerId + 1) % numberOfPlayers;
 
         currentPhase = turnPhase.WAITING_FOR_ROLL;
+        if (currentPlayerId == 0) {
+            activateStones(p1Stones,p2Stones);
+            turnText.text="Current Player: One";
+        } else {
+            activateStones(p2Stones, p1Stones);
+            turnText.text="Current Player: Two";
+        }
+        
 
         this.isDoneRolling = false;
         this.isDoneClicking = false;
         this.isDoneAnimating = false;
         theDiceRoller.transform.GetChild(4).GetComponent<Text>().text = "?";
+    }
+
+
+    private void activateStones(PlayerStone[] aStones,PlayerStone[] dStones) {
+        for (int i = 0; i < aStones.Length; i++) {
+            aStones[i].disable(false);
+            dStones[i].disable(true);
+        }
     }
 }

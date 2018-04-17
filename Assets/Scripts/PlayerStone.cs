@@ -153,4 +153,11 @@ public class PlayerStone : MonoBehaviour {
 
 
     }
+
+    //only change the state of non-scored stones
+    public void disable(bool state) {
+        if (scoreMe != true) {
+            this.disabled = state;
+        }
+    }
 }
