@@ -17,6 +17,7 @@ public class PlayerStone : MonoBehaviour {
     bool isAnimating = false;
     int moveQueueIndex;
     bool scoreMe = false;
+    bool disabled = false;
 
 	// Use this for initialization
 	void Start () {
@@ -71,7 +72,7 @@ public class PlayerStone : MonoBehaviour {
                 //we are being scored
                 //TODO: move to scored pile 
                 setNewTargetPosition(this.transform.position + Vector3.right * 2f);
-                moveQueueIndex++;
+                moveQueueIndex=moveQueue.Length; //HACK to make you only move here once
             }
             else {
                 setNewTargetPosition(nextTile.transform.position);
@@ -101,15 +102,9 @@ public class PlayerStone : MonoBehaviour {
             //you can move unless rolling is done and you can move if you've already moved
             return;
         }
-
-     //   if (theStateManager.isDoneRolling==false){
-    	//	//you can't move unless rolling is done!
-    	//	return;
-    	//}
-        //if (theStateManager.isDoneClicking == true) {
-        //    //we've already done a move!
-        //    return;
-        //}
+        if(this.disabled==true){
+            return;
+        }
 
 		int spacesToMove = theStateManager.diceTotal;
         //where should we end up?
@@ -131,6 +126,7 @@ public class PlayerStone : MonoBehaviour {
                     Debug.Log ("Score!");
                     finalTile = null;
                     scoreMe = true;
+                    this.disabled = true;
 				} else if (finalTile.nextTiles.Length > 1) {
 					//branch based to player ID
 					finalTile = finalTile.nextTiles [0];
@@ -139,7 +135,10 @@ public class PlayerStone : MonoBehaviour {
 				}
 			}
             moveQueue[i] = finalTile;
-            Debug.Log(moveQueue[i]);
+            if(scoreMe==true){
+                //no need to compute any more moves
+                break;
+            }
 		}
 
         //TODO: check to see if destination is legal!
@@ -148,7 +147,6 @@ public class PlayerStone : MonoBehaviour {
         //this.transform.position=finalTile.transform.position;
 
         moveQueueIndex = 0;
-        setNewTargetPosition(moveQueue[0].transform.position);
         currentTile = finalTile;
         theStateManager.currentPhase++;
         this.isAnimating = true;   //this stone is now animating
