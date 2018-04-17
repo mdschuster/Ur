@@ -52,5 +52,9 @@ public class DiceRoller : MonoBehaviour {
 
         //sets doneRolling to true after all the rolling is done
         theStateManager.currentPhase++;
+        if(theStateManager.diceTotal==0){
+            //FIXME causes newturn to happen instantly when rolling 0
+            theStateManager.currentPhase = StateManager.turnPhase.WAITING_FOR_NEWTURN;
+        }
     }
 }
