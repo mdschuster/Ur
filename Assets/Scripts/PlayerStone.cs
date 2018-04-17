@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerStone : MonoBehaviour {
 
-	DiceRoller theDiceRoller;
+	StateManager theStateManager;
 	public Tile startingTile;
 	Tile currentTile=null;
     Vector3 targetPosition;
@@ -14,17 +14,23 @@ public class PlayerStone : MonoBehaviour {
     float smoothTimeVert = 0.1f;
     float smoothHeight = 0.5f;
     Tile[] moveQueue;  //stores tiles that the stone will move through to it's final destination
+    bool isAnimating = false;
     int moveQueueIndex;
     bool scoreMe = false;
 
 	// Use this for initialization
 	void Start () {
-		theDiceRoller = GameObject.FindObjectOfType<DiceRoller> ();
+		theStateManager = GameObject.FindObjectOfType<StateManager> ();
         targetPosition = this.transform.position;
 	}
 
     // Update is called once per frame
     void Update() {
+
+        if (this.isAnimating == false) {
+            //nothing to do
+            return;
+        }
         //smoothdamp takes two poistions, and smoothes the time
         //it takes to go from one to another
         //lookup smoothdamp for more info about what is going on here
@@ -60,16 +66,20 @@ public class PlayerStone : MonoBehaviour {
         //we have reached our last desired position, do we have another move queued up?
         if (moveQueue != null && moveQueueIndex < moveQueue.Length) {
             Tile nextTile = moveQueue[moveQueueIndex];
-            if (nextTile == null && scoreMe == true) {
+            if (nextTile == null) {
                 //we are being scored
                 //TODO: move to scored pile 
-                setNewTargetPosition(this.transform.position + Vector3.right * 10f);
+                setNewTargetPosition(this.transform.position + Vector3.right * 2f);
+                moveQueueIndex++;
             }
             else {
                 setNewTargetPosition(nextTile.transform.position);
                 moveQueueIndex++;
             }
 
+        } else {
+            this.isAnimating = false;
+            theStateManager.isDoneAnimating = true;
         }
     }
 
@@ -85,15 +95,23 @@ public class PlayerStone : MonoBehaviour {
         //TODO is it our turn
 
         //Have we rolled the dice;
-        if (theDiceRoller.isDoneRolling==false){
-			//you can't move!
+        if (theStateManager.isDoneRolling==false){
+			//you can't move unless rolling is done!
 			return;
 		}
-		int spacesToMove = theDiceRoller.diceTotal;
+        if (theStateManager.isDoneClicking == true) {
+            //we've already done a move!
+            return;
+        }
+
+		int spacesToMove = theStateManager.diceTotal;
 
         //where should we end up?
         if (spacesToMove==0){
-			return;
+            theStateManager.isDoneClicking = true;
+            this.isAnimating = false;
+            theStateManager.isDoneAnimating = true;
+            return;
 		}
 
 		Tile finalTile = currentTile;
@@ -118,11 +136,15 @@ public class PlayerStone : MonoBehaviour {
             moveQueue[i] = finalTile;
 		}
 
-        //now move to final 
+        //TODO: check to see if destination is legal!
+
+        //now move to final (teleport)
         //this.transform.position=finalTile.transform.position;
-        //TODO: Animate
+
         moveQueueIndex = 0;
         currentTile = finalTile;
+        theStateManager.isDoneClicking = true;
+        this.isAnimating = true;   //this stone is now animating
 
 
     }

@@ -6,37 +6,34 @@ using UnityEngine.UI;
 public class DiceRoller : MonoBehaviour {
 
 	public int[] diceValues = new int[4];
-	public int diceTotal;
 	public Sprite[] DiceImageOne;
 	public Sprite[] DiceImageZero;
-	public bool isDoneRolling = false;
+    StateManager theStateManager;
 
 	// Use this for initialization
 	void Start () {
+        theStateManager = GameObject.FindObjectOfType<StateManager>();
+    }
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
-	public void newTurn(){
-		//This is the start of a player's turn
-		//we don't have a roll for them yet
-		isDoneRolling = false;
-		this.transform.GetChild (4).GetComponent<Text> ().text = "?";
-	}
 
 	public void RollTheDice(){
-		// In Ur, you roll four dice (50-50 chance)
-		// half the faces are 0, half are 1
-		// Not physics enabled dice, just RNG for now
-
-		diceTotal = 0;
+        // In Ur, you roll four dice (50-50 chance)
+        // half the faces are 0, half are 1
+        // Not physics enabled dice, just RNG for now
+        if (theStateManager.isDoneRolling == true) {
+            //can't roll again this turn
+            return;
+        }
+        theStateManager.diceTotal = 0;
 		for (int i = 0; i < diceValues.Length; i++) {
 			diceValues [i] = Random.Range (0, 2); //inclusive min, exclusive max
-			diceTotal += diceValues[i];
+            theStateManager.diceTotal += diceValues[i];
 
 
 			//Update the visuals to show dice roll
@@ -53,9 +50,9 @@ public class DiceRoller : MonoBehaviour {
 		}
 
 		//update total
-		this.transform.GetChild(4).GetComponent<Text>().text=diceTotal.ToString();
+		this.transform.GetChild(4).GetComponent<Text>().text= theStateManager.diceTotal.ToString();
 
-		//sets doneRolling to true after all the rolling is done
-		isDoneRolling = true;
+        //sets doneRolling to true after all the rolling is done
+        theStateManager.isDoneRolling = true;
 	}
 }
