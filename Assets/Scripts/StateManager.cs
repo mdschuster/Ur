@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class StateManager : MonoBehaviour {
 
+
     public int currentPlayerId=0;
     public int diceTotal;
     public int numberOfPlayers = 2;
@@ -13,9 +14,8 @@ public class StateManager : MonoBehaviour {
     public bool isDoneAnimating = false;
     DiceRoller theDiceRoller;
 
-    //TODO: Try enumerations
-    //public enum turnPhase { WAITING_FOR_ROLL, WAITING_FOR_CLICK, WAITING_FOR_ANIMATION};
-    //public turnPhase currentPhase;
+    public enum turnPhase { WAITING_FOR_ROLL, WAITING_FOR_CLICK, WAITING_FOR_ANIMATION, WAITING_FOR_NEWTURN };
+    public turnPhase currentPhase;
 
     // Use this for initialization
     void Start () {
@@ -25,7 +25,7 @@ public class StateManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		//is the turn done?
-        if(isDoneAnimating && isDoneClicking && isDoneRolling) {
+        if(currentPhase==turnPhase.WAITING_FOR_NEWTURN) {
             Debug.Log("Turn is Done");
             newTurn();
         }
@@ -37,6 +37,8 @@ public class StateManager : MonoBehaviour {
         //we don't have a roll for them yet
 
         currentPlayerId = (currentPlayerId + 1) % numberOfPlayers;
+
+        currentPhase = turnPhase.WAITING_FOR_ROLL;
 
         this.isDoneRolling = false;
         this.isDoneClicking = false;

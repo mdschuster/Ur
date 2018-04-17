@@ -27,7 +27,7 @@ public class PlayerStone : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-        if (this.isAnimating == false) {
+        if (theStateManager.currentPhase != StateManager.turnPhase.WAITING_FOR_ANIMATION || isAnimating == false) {
             //nothing to do
             return;
         }
@@ -65,6 +65,7 @@ public class PlayerStone : MonoBehaviour {
     void advanceMoveQueue() {
         //we have reached our last desired position, do we have another move queued up?
         if (moveQueue != null && moveQueueIndex < moveQueue.Length) {
+
             Tile nextTile = moveQueue[moveQueueIndex];
             if (nextTile == null) {
                 //we are being scored
@@ -79,7 +80,8 @@ public class PlayerStone : MonoBehaviour {
 
         } else {
             this.isAnimating = false;
-            theStateManager.isDoneAnimating = true;
+            theStateManager.currentPhase++;
+
         }
     }
 
@@ -95,22 +97,25 @@ public class PlayerStone : MonoBehaviour {
         //TODO is it our turn
 
         //Have we rolled the dice;
-        if (theStateManager.isDoneRolling==false){
-			//you can't move unless rolling is done!
-			return;
-		}
-        if (theStateManager.isDoneClicking == true) {
-            //we've already done a move!
+        if(theStateManager.currentPhase != StateManager.turnPhase.WAITING_FOR_CLICK){
+            //you can move unless rolling is done and you can move if you've already moved
             return;
         }
 
-		int spacesToMove = theStateManager.diceTotal;
+     //   if (theStateManager.isDoneRolling==false){
+    	//	//you can't move unless rolling is done!
+    	//	return;
+    	//}
+        //if (theStateManager.isDoneClicking == true) {
+        //    //we've already done a move!
+        //    return;
+        //}
 
+		int spacesToMove = theStateManager.diceTotal;
         //where should we end up?
         if (spacesToMove==0){
-            theStateManager.isDoneClicking = true;
+            theStateManager.currentPhase = StateManager.turnPhase.WAITING_FOR_NEWTURN;
             this.isAnimating = false;
-            theStateManager.isDoneAnimating = true;
             return;
 		}
 
@@ -134,6 +139,7 @@ public class PlayerStone : MonoBehaviour {
 				}
 			}
             moveQueue[i] = finalTile;
+            Debug.Log(moveQueue[i]);
 		}
 
         //TODO: check to see if destination is legal!
@@ -142,8 +148,9 @@ public class PlayerStone : MonoBehaviour {
         //this.transform.position=finalTile.transform.position;
 
         moveQueueIndex = 0;
+        setNewTargetPosition(moveQueue[0].transform.position);
         currentTile = finalTile;
-        theStateManager.isDoneClicking = true;
+        theStateManager.currentPhase++;
         this.isAnimating = true;   //this stone is now animating
 
 
