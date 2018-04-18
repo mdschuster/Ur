@@ -71,6 +71,7 @@ public class PlayerStone : MonoBehaviour {
             if (nextTile == null) {
                 //we are being scored
                 //TODO: move to scored pile 
+                Debug.Log("SCORING STONE!");
                 setNewTargetPosition(this.transform.position + Vector3.right * 2f);
                 moveQueueIndex=moveQueue.Length; //HACK to make you only move here once
             }
