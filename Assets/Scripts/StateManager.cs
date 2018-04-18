@@ -22,6 +22,8 @@ public class StateManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        currentPhase = turnPhase.WAITING_FOR_ROLL;
+        currentPlayerId = 0;
         theDiceRoller = GameObject.FindObjectOfType<DiceRoller>();
         turnText = GameObject.Find("PlayerText").GetComponent<Text>();
         p1Stones = GameObject.Find("Player1-StoneStorage").GetComponentsInChildren<PlayerStone>();
@@ -60,7 +62,7 @@ public class StateManager : MonoBehaviour {
         theDiceRoller.transform.GetChild(4).GetComponent<Text>().text = "?";
     }
 
-
+    //probably don't need this anymore
     private void activateStones(PlayerStone[] aStones,PlayerStone[] dStones) {
         for (int i = 0; i < aStones.Length; i++) {
             aStones[i].disable(false);

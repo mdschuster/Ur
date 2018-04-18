@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerStone : MonoBehaviour {
 
+    public int playerId;    //set in unity
 	StateManager theStateManager;
 	public Tile startingTile;
 	Tile currentTile=null;
@@ -93,17 +94,14 @@ public class PlayerStone : MonoBehaviour {
     }
 
 	void OnMouseUp(){
-		//TODO: is the mouse over a UI element? Ignore click if so
-		//Debug.Log ("Click");
-
-        //TODO is it our turn
+        //TODO: is the mouse over a UI element? Ignore click if so
 
         //Have we rolled the dice;
         if(theStateManager.currentPhase != StateManager.turnPhase.WAITING_FOR_CLICK){
             //you can move unless rolling is done and you can move if you've already moved
             return;
         }
-        if(this.disabled==true){
+        if(this.theStateManager.currentPlayerId!=playerId){
             return;
         }
 
@@ -130,9 +128,9 @@ public class PlayerStone : MonoBehaviour {
                     this.disabled = true;
 				} else if (finalTile.nextTiles.Length > 1) {
 					//branch based to player ID
-					finalTile = finalTile.nextTiles [0];
+                    finalTile = finalTile.nextTiles [playerId];
 				} else {
-					finalTile = finalTile.nextTiles [0];
+                    finalTile = finalTile.nextTiles [0];
 				}
 			}
             moveQueue[i] = finalTile;
