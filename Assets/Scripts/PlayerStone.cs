@@ -18,7 +18,6 @@ public class PlayerStone : MonoBehaviour {
     bool isAnimating = false;
     int moveQueueIndex;
     bool scoreMe = false;
-    bool disabled = false;
 
 	// Use this for initialization
 	void Start () {
@@ -102,6 +101,7 @@ public class PlayerStone : MonoBehaviour {
             return;
         }
         if (this.theStateManager.currentPlayerId != playerId) {
+            //is it your turn?
             return;
         }
 
@@ -125,7 +125,6 @@ public class PlayerStone : MonoBehaviour {
                     Debug.Log("Score!");
                     finalTile = null;
                     scoreMe = true;
-                    this.disabled = true;
                 } else if (finalTile.nextTiles.Length > 1) {
                     //branch based to player ID
                     finalTile = finalTile.nextTiles[playerId];

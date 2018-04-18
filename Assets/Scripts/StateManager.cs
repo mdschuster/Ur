@@ -13,8 +13,6 @@ public class StateManager : MonoBehaviour {
     public bool isDoneClicking = false;
     public bool isDoneAnimating = false;
     DiceRoller theDiceRoller;
-    PlayerStone[] p1Stones;
-    PlayerStone[] p2Stones;
     Text turnText;
 
     public enum turnPhase { WAITING_FOR_ROLL, WAITING_FOR_CLICK, WAITING_FOR_ANIMATION, WAITING_FOR_NEWTURN };
@@ -26,8 +24,6 @@ public class StateManager : MonoBehaviour {
         currentPlayerId = 0;
         theDiceRoller = GameObject.FindObjectOfType<DiceRoller>();
         turnText = GameObject.Find("PlayerText").GetComponent<Text>();
-        p1Stones = GameObject.Find("Player1-StoneStorage").GetComponentsInChildren<PlayerStone>();
-        p2Stones = GameObject.Find("Player2-StoneStorage").GetComponentsInChildren<PlayerStone>();
     }
 	
 	// Update is called once per frame
