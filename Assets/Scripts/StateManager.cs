@@ -48,10 +48,8 @@ public class StateManager : MonoBehaviour {
 
         currentPhase = turnPhase.WAITING_FOR_ROLL;
         if (currentPlayerId == 0) {
-            activateStones(p1Stones,p2Stones);
             turnText.text="Current Player: One";
         } else {
-            activateStones(p2Stones, p1Stones);
             turnText.text="Current Player: Two";
         }
         
@@ -62,11 +60,4 @@ public class StateManager : MonoBehaviour {
         theDiceRoller.transform.GetChild(4).GetComponent<Text>().text = "?";
     }
 
-    //probably don't need this anymore
-    private void activateStones(PlayerStone[] aStones,PlayerStone[] dStones) {
-        for (int i = 0; i < aStones.Length; i++) {
-            aStones[i].disable(false);
-            dStones[i].disable(true);
-        }
-    }
 }

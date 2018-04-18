@@ -93,52 +93,52 @@ public class PlayerStone : MonoBehaviour {
         velocity = Vector3.zero;
     }
 
-	void OnMouseUp(){
+    void OnMouseUp() {
         //TODO: is the mouse over a UI element? Ignore click if so
 
         //Have we rolled the dice;
-        if(theStateManager.currentPhase != StateManager.turnPhase.WAITING_FOR_CLICK){
+        if (theStateManager.currentPhase != StateManager.turnPhase.WAITING_FOR_CLICK) {
             //you can move unless rolling is done and you can move if you've already moved
             return;
         }
-        if(this.theStateManager.currentPlayerId!=playerId){
+        if (this.theStateManager.currentPlayerId != playerId) {
             return;
         }
 
-		int spacesToMove = theStateManager.diceTotal;
+        int spacesToMove = theStateManager.diceTotal;
         //where should we end up?
-        if (spacesToMove==0){
+        if (spacesToMove == 0) {
             theStateManager.currentPhase = StateManager.turnPhase.WAITING_FOR_NEWTURN;
             this.isAnimating = false;
             return;
-		}
+        }
 
-		Tile finalTile = currentTile;
+        Tile finalTile = currentTile;
         moveQueue = new Tile[spacesToMove];
 
-		for (int i = 0; i < spacesToMove; i++) {
+        for (int i = 0; i < spacesToMove; i++) {
             if (finalTile == null && scoreMe == false) { //on starting space
-				finalTile = startingTile;
-			} else {
-				if (finalTile.nextTiles == null || finalTile.nextTiles.Length == 0) {
+                finalTile = startingTile;
+            } else {
+                if (finalTile.nextTiles == null || finalTile.nextTiles.Length == 0) {
                     //We have reaced the end and should score
-                    Debug.Log ("Score!");
+                    Debug.Log("Score!");
                     finalTile = null;
                     scoreMe = true;
                     this.disabled = true;
-				} else if (finalTile.nextTiles.Length > 1) {
-					//branch based to player ID
-                    finalTile = finalTile.nextTiles [playerId];
-				} else {
-                    finalTile = finalTile.nextTiles [0];
-				}
-			}
+                } else if (finalTile.nextTiles.Length > 1) {
+                    //branch based to player ID
+                    finalTile = finalTile.nextTiles[playerId];
+                } else {
+                    finalTile = finalTile.nextTiles[0];
+                }
+            }
             moveQueue[i] = finalTile;
-            if(scoreMe==true){
+            if (scoreMe == true) {
                 //no need to compute any more moves
                 break;
             }
-		}
+        }
 
         //TODO: check to see if destination is legal!
 
@@ -151,12 +151,5 @@ public class PlayerStone : MonoBehaviour {
         this.isAnimating = true;   //this stone is now animating
 
 
-    }
-
-    //only change the state of non-scored stones
-    public void disable(bool state) {
-        if (scoreMe != true) {
-            this.disabled = state;
-        }
     }
 }
