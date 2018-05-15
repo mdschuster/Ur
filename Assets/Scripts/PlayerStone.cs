@@ -114,32 +114,32 @@ public class PlayerStone : MonoBehaviour {
             return;
         }
 
-        Tile finalTile = currentTile;
-        moveQueue = new Tile[spacesToMove];
+        moveQueue = getTilesAhead(spacesToMove);
 
-        for (int i = 0; i < spacesToMove; i++) {
-            if (finalTile == null && scoreMe == false) { //on starting space
-                finalTile = startingTile;
-            } else {
-                if (finalTile.nextTiles == null || finalTile.nextTiles.Length == 0) {
-                    //We have reaced the end and should score
-                    Debug.Log("Score!");
-                    finalTile = null;
-                    scoreMe = true;
-                } else if (finalTile.nextTiles.Length > 1) {
-                    //branch based to player ID
-                    finalTile = finalTile.nextTiles[playerId];
-                } else {
-                    finalTile = finalTile.nextTiles[0];
-                }
-            }
-            moveQueue[i] = finalTile;
-            if (scoreMe == true) {
-                //no need to compute any more moves
-                break;
-            }
-        }
+        //for (int i = 0; i < spacesToMove; i++) {
+        //    if (finalTile == null && scoreMe == false) { //on starting space
+        //        finalTile = startingTile;
+        //    } else {
+        //        if (finalTile.nextTiles == null || finalTile.nextTiles.Length == 0) {
+        //            //We have reaced the end and should score
+        //            Debug.Log("Score!");
+        //            finalTile = null;
+        //            scoreMe = true;
+        //        } else if (finalTile.nextTiles.Length > 1) {
+        //            //branch based to player ID
+        //            finalTile = finalTile.nextTiles[playerId];
+        //        } else {
+        //            finalTile = finalTile.nextTiles[0];
+        //        }
+        //    }
+        //    moveQueue[i] = finalTile;
+        //    if (scoreMe == true) {
+        //        //no need to compute any more moves
+        //        break;
+        //    }
+        //}
 
+        Tile finalTile = moveQueue[moveQueue.Length-1];
         //TODO: check to see if destination is legal!
         if (finalTile != null) {  //always allowed to move off board
             if (canLegallyMoveTo(finalTile) == false) {  //can't move to this tile
@@ -156,9 +156,12 @@ public class PlayerStone : MonoBehaviour {
 
         //now move to final (teleport)
         //this.transform.position=finalTile.transform.position;
-
-        startingTile.playerStone = null;
-        finalTile.playerStone = this;
+        if (currentTile != null) {
+            currentTile.playerStone = null;
+        }
+        if (finalTile != null) {
+            finalTile.playerStone = this;
+        }
 
         moveQueueIndex = 0;
         currentTile = finalTile;
@@ -168,10 +171,10 @@ public class PlayerStone : MonoBehaviour {
 
     }
 
-    //return the list of tiles contained in the moves ahead of uss
+    //return the list of tiles contained in the moves ahead of us
     Tile[] getTilesAhead(int spacesToMove) {
         Tile finalTile = currentTile;
-        listOfTiles = new Tile[spacesToMove];
+        Tile[] listOfTiles = new Tile[spacesToMove];
 
         for (int i = 0; i < spacesToMove; i++) {
             if (finalTile == null && scoreMe == false) { //on starting space
@@ -195,10 +198,12 @@ public class PlayerStone : MonoBehaviour {
                 break;
             }
         }
+        return listOfTiles;
     }
 
     Tile getTileAhead(int spacesToMove) {
-
+        Tile[] queue = getTilesAhead(spacesToMove);
+        return queue[0];
     }
 
     public bool canMoveAhead(int spacesToMove) {
@@ -227,17 +232,18 @@ public class PlayerStone : MonoBehaviour {
         //player stone knows that storage place it came from
         currentTile.playerStone = null;
         currentTile = null;
-
+        
         //save our current position
         Vector3 savePosition = this.transform.position;
-        myStoneStorage.addStoneToStorage(this.gameObject);
+        //myStoneStorage.addStoneToStorage(this.gameObject, this.transform.parent);
 
         //set our new position to the animation target
-        targetPosition = this.transform.position;
-        setNewTargetPosition(this.transform.position);
+        //targetPosition = this.transform.position;
+        setNewTargetPosition(this.transform.parent.position);
 
         //restore our saved position
-        this.transform.position = savePosition;
+        //this.transform.position = this.transform.parent.position;
+        isAnimating = true;
         //TODO: maybe animate moving back to storage location
 
 
