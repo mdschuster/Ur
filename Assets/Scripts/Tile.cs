@@ -5,11 +5,11 @@ using UnityEngine;
 public class Tile : MonoBehaviour {
 
 	public Tile[] nextTiles; //use array to handle branching
-							 //see inspector for the "linked list"
+                             //see inspector for the "linked list"
+    public PlayerStone playerStone; //null to start with
 
 	// Use this for initialization
 	void Start () {
-		
 	}
 	
 	// Update is called once per frame

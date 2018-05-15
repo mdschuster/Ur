@@ -19,7 +19,7 @@ public class StoneStorage : MonoBehaviour {
     }
 
 
-    void addStoneToStorage(GameObject theStone, Transform thePlaceholder = null){
+    public void addStoneToStorage(GameObject theStone, Transform thePlaceholder = null){
         //find the first empty Placeholder
         if(thePlaceholder==null){
             for (int i = 0; i < this.transform.childCount; i++) {
@@ -45,6 +45,7 @@ public class StoneStorage : MonoBehaviour {
         //set starting tile
         theStone.GetComponent<PlayerStone>().startingTile = this.startingTile;
 
-
+        //set storage location (for the stone to go back to if it gets knocked off)
+        theStone.GetComponent<PlayerStone>().myStoneStorage = this;
     }
 }

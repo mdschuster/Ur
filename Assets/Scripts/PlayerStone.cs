@@ -7,6 +7,7 @@ public class PlayerStone : MonoBehaviour {
     public int playerId;    //set in unity
 	StateManager theStateManager;
 	public Tile startingTile;
+    public StoneStorage myStoneStorage;
 	Tile currentTile=null;
     Vector3 targetPosition;
     Vector3 velocity = Vector3.zero;
@@ -140,14 +141,104 @@ public class PlayerStone : MonoBehaviour {
         }
 
         //TODO: check to see if destination is legal!
+        if (finalTile != null) {  //always allowed to move off board
+            if (canLegallyMoveTo(finalTile) == false) {  //can't move to this tile
+                finalTile = currentTile;
+                moveQueue = null;
+                return;
+            }
+
+            //if there is an enemy tile in our legal space, kick it out
+            if (finalTile.playerStone != null) {
+                finalTile.playerStone.returnToStorage();
+            }
+        }
 
         //now move to final (teleport)
         //this.transform.position=finalTile.transform.position;
+
+        startingTile.playerStone = null;
+        finalTile.playerStone = this;
 
         moveQueueIndex = 0;
         currentTile = finalTile;
         theStateManager.currentPhase++;
         this.isAnimating = true;   //this stone is now animating
+
+
+    }
+
+    //return the list of tiles contained in the moves ahead of uss
+    Tile[] getTilesAhead(int spacesToMove) {
+        Tile finalTile = currentTile;
+        listOfTiles = new Tile[spacesToMove];
+
+        for (int i = 0; i < spacesToMove; i++) {
+            if (finalTile == null && scoreMe == false) { //on starting space
+                finalTile = startingTile;
+            } else {
+                if (finalTile.nextTiles == null || finalTile.nextTiles.Length == 0) {
+                    //We have reaced the end and should score
+                    Debug.Log("Score!");
+                    finalTile = null;
+                    scoreMe = true;
+                } else if (finalTile.nextTiles.Length > 1) {
+                    //branch based to player ID
+                    finalTile = finalTile.nextTiles[playerId];
+                } else {
+                    finalTile = finalTile.nextTiles[0];
+                }
+            }
+            listOfTiles[i] = finalTile;
+            if (scoreMe == true) {
+                //no need to compute any more moves
+                break;
+            }
+        }
+    }
+
+    Tile getTileAhead(int spacesToMove) {
+
+    }
+
+    public bool canMoveAhead(int spacesToMove) {
+        Tile theTile = getTileAhead(spacesToMove);
+        return canLegallyMoveTo(theTile);
+    }
+
+    bool canLegallyMoveTo(Tile destinationTile) {
+        //is the tile empty
+        if (destinationTile.playerStone == null) {
+            return true;    //tile is empty
+        }
+        //is it one of our stones?
+        if (destinationTile.playerStone.playerId == this.playerId) {
+            //we can't land on our own stone
+            return false;
+        }
+
+        //if enemey stone, is it in a safe square?
+        //TODO: safe squares
+
+        return true;
+    }
+
+    public void returnToStorage() {
+        //player stone knows that storage place it came from
+        currentTile.playerStone = null;
+        currentTile = null;
+
+        //save our current position
+        Vector3 savePosition = this.transform.position;
+        myStoneStorage.addStoneToStorage(this.gameObject);
+
+        //set our new position to the animation target
+        targetPosition = this.transform.position;
+        setNewTargetPosition(this.transform.position);
+
+        //restore our saved position
+        this.transform.position = savePosition;
+        //TODO: maybe animate moving back to storage location
 
 
     }

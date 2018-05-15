@@ -56,4 +56,34 @@ public class StateManager : MonoBehaviour {
         theDiceRoller.transform.GetChild(4).GetComponent<Text>().text = "?";
     }
 
+    public void checkLegalMoves() {
+
+        //if we rolled zero, we have no legal moves
+        if (diceTotal == 0) {
+            StartCoroutine("noLegalMoveCoroutine");
+            return;
+        }
+
+        //loop though all of a player's stone
+        PlayerStone[] ps = GameObject.FindObjectsOfType<PlayerStone>();
+
+        foreach (PlayerStone p in ps) {
+
+        }
+
+
+
+        //highlight stones that can be legally moved
+        //if no legal moves, wait a sec then move to the next player (give message)
+    }
+
+    IEnumerator noLegalMoveCoroutine() {
+        //display message
+        //wait a sec
+
+        //setup the new turn
+        yield return new WaitForSeconds(1f);
+        currentPhase = turnPhase.WAITING_FOR_NEWTURN;
+    }
+
 }
